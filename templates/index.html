@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมุดโทรศัพย์ของฉัน</title>
+
+        <style>
+            body { font-family: sans-serif; padding: 20px;}
+            input {margin: 0px 0; padding: 5px;}
+            button { padding: 5px 10px; background-color: #4caf50; color: white; border: none; cursor: pointer;}
+        </style>
+</head>
+<body>
+
+<h1>สมุดโทรศัพย์</h1>
+
+<label for="">ชื่อ</label><br>
+<input type="text" id="nameInput" placeholder="กรอกชื่อ..."><br><br>
+
+<label for="">เบอร์โทร</label><br>
+<input type="text" id="phoneInput" placeholder="กรอกเบอร์..."><br><br>
+<button onclick="saveContact()">บันทึกเบอร์โทร</button>
+
+<script>
+    async function saveContact(params) {
+        let name = document.getElementById('nameInput').value;
+        let phone = document.getElementById('phoneInput').value;
+
+        let response = await fetch('/api/add_contact', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json'},
+            body: JSON.stringify({ name: name, phone: phone })
+        });
+
+        let result = await response.json();
+        alert(result.message);
+    }
+</script>
+</body>
+</html>
