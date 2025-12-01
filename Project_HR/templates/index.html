@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจัดการพนักงาน (HR System)</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: auto; background-color: #f4f4f9; }
+        h1 { text-align: center; color: #333; }
+        .form-group { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;}
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 200px; }
+        button { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; color: white; }
+        .btn-add { background-color: #28a745; }
+        .btn-delete { background-color: #dc3545; }
+        .btn-edit { background-color: #ffc107; color: black; }
+        
+        table { width: 100%; border-collapse: collapse; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+    </style>
+</head>
+<body>
+
+    <h1>👔 ระบบจัดการพนักงาน</h1>
+
+    <div class="form-group">
+        <input type="text" id="nameInput" placeholder="ชื่อ-นามสกุล">
+        <input type="text" id="posInput" placeholder="ตำแหน่ง">
+        <button class="btn-add" onclick="addEmployee()">+ เพิ่มพนักงาน</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>ชื่อ-นามสกุล</th>
+                <th>ตำแหน่ง</th>
+                <th>จัดการ</th>
+            </tr>
+        </thead>
+        <tbody id="employeeTable">
+            </tbody>
+    </table>
+
+    <script>
+        // 1. โหลดข้อมูลเมื่อเปิดหน้าเว็บ
+        window.onload = loadEmployees;
+
+        async function loadEmployees() {
+            let response = await fetch('/api/employees');
+            let data = await response.json();
+            let table = document.getElementById('employeeTable');
+            table.innerHTML = ''; // ล้างข้อมูลเก่าก่อน
+
+            data.forEach(emp => {
+                let row = `<tr>
+                    <td>${emp.id}</td>
+                    <td>${emp.fullname}</td>
+                    <td>${emp.position}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editEmployee(${emp.id}, '${emp.fullname}', '${emp.position}')">✏️ แก้ไข</button>
+                        <button class="btn-delete" onclick="deleteEmployee(${emp.id})">🗑️ ลบ</button>
+                    </td>
+                </tr>`;
+                table.innerHTML += row;
+            });
+        }
+
+        // 2. เพิ่มพนักงาน (POST)
+        async function addEmployee() {
+            let name = document.getElementById('nameInput').value;
+            let pos = document.getElementById('posInput').value;
+
+            if(!name || !pos) { alert("กรอกข้อมูลให้ครบ!"); return; }
+
+            await fetch('/api/add_employees', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullname: name, position: pos }) // ส่งตัวแปรให้ตรงกับ Python
+            });
+
+            document.getElementById('nameInput').value = '';
+            document.getElementById('posInput').value = '';
+            loadEmployees(); // โหลดตารางใหม่ทันที
+        }
+
+        // 3. ลบพนักงาน (DELETE)
+        async function deleteEmployee(id) {
+            if(!confirm("ต้องการลบพนักงานคนนี้ใช่ไหม?")) return;
+
+            await fetch('/api/delete_employee/' + id, { method: 'DELETE' });
+            loadEmployees(); // โหลดตารางใหม่ทันที
+        }
+
+        // 4. แก้ไขพนักงาน (PUT)
+        async function editEmployee(id, oldName, oldPos) {
+            let newName = prompt("แก้ไขชื่อ:", oldName);
+            let newPos = prompt("แก้ไขตำแหน่ง:", oldPos);
+
+            if (newName && newPos) {
+                await fetch('/api/update_employee/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullname: newName, position: newPos })
+                });
+                loadEmployees(); // โหลดตารางใหม่ทันที
+            }
+        }
+    </script>
+
+</body>
+</html>
