@@ -43,10 +43,14 @@ def delete_employee(emp_id):
         
         cursor.execute(my_sql, (emp_id,))
 
+        if cursor.rowcount == 0:
+            conn.close()  
+            return jsonify({"message": f"ไม่พบรหัส {emp_id}"}), 404 
+
         conn.commit()
         conn.close()
 
-        return jsonify({"message": f"ลบพนักงานหรัส {emp_id} เรียบร้อยแล้ว"})
+        return jsonify({"message": f"ลบพนักงานรหัส {emp_id} เรียบร้อยแล้ว"})
 
     except Exception as e:
         return jsonify({"error" : str(e)}),500
@@ -73,3 +77,4 @@ def add_employees():
 
 if __name__== "__main__":
     app.run(debug=True)
+

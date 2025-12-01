@@ -1,41 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สมุดโทรศัพย์ของฉัน</title>
-
-        <style>
-            body { font-family: sans-serif; padding: 20px;}
-            input {margin: 0px 0; padding: 5px;}
-            button { padding: 5px 10px; background-color: #4caf50; color: white; border: none; cursor: pointer;}
-        </style>
+    <title>ระบบจัดการข้อมูล HR/Phonebook</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        input { margin: 5px 0; padding: 8px; width: 100%; box-sizing: border-box; }
+        button { padding: 10px; color: white; border: none; cursor: pointer; width: 100%; margin-top: 5px;}
+        .btn-save { background-color: #4caf50; } /* สีเขียว */
+        .btn-delete { background-color: #f44336; } /* สีแดง */
+        hr { margin: 20px 0; }
+    </style>
 </head>
 <body>
 
-<h1>สมุดโทรศัพย์</h1>
+    <h1>📝 บันทึกข้อมูลใหม่</h1>
+    <label>ชื่อ:</label>
+    <input type="text" id="nameInput" placeholder="กรอกชื่อ...">
+    
+    <label>เบอร์โทร/ข้อมูล:</label>
+    <input type="text" id="phoneInput" placeholder="กรอกเบอร์โทร หรือ ตำแหน่ง...">
+    
+    <button class="btn-save" onclick="saveContact()">💾 บันทึกข้อมูล</button>
 
-<label for="">ชื่อ</label><br>
-<input type="text" id="nameInput" placeholder="กรอกชื่อ..."><br><br>
+    <hr> <h1>🗑️ ลบข้อมูล</h1>
+    <label>ระบุชื่อที่ต้องการลบ:</label>
+    <input type="text" id="deleteInput" placeholder="ระบุชื่อคนที่ต้องการลบ...">
+    
+    <button class="btn-delete" onclick="deleteContact()">❌ ลบรายชื่อนี้ทิ้ง</button>
 
-<label for="">เบอร์โทร</label><br>
-<input type="text" id="phoneInput" placeholder="กรอกเบอร์..."><br><br>
-<button onclick="saveContact()">บันทึกเบอร์โทร</button>
+    <script>
+        // 1. ฟังก์ชันบันทึก (ตัวเดิมของคุณ)
+        async function saveContact() {
+            let name = document.getElementById('nameInput').value;
+            let phone = document.getElementById('phoneInput').value;
 
-<script>
-    async function saveContact(params) {
-        let name = document.getElementById('nameInput').value;
-        let phone = document.getElementById('phoneInput').value;
+            if (!name || !phone) { alert("กรุณากรอกให้ครบ!"); return; }
 
-        let response = await fetch('/api/add_contact', {
-            method: 'POST',
-            headers: { 'Content-type': 'application/json'},
-            body: JSON.stringify({ name: name, phone: phone })
-        });
+            let response = await fetch('/api/add_contact', {
+                method: 'POST',
+                headers: { 'Content-type': 'application/json'},
+                body: JSON.stringify({ name: name, phone: phone })
+            });
 
-        let result = await response.json();
-        alert(result.message);
-    }
-</script>
+            let result = await response.json();
+            alert(result.message);
+        }
+
+        // 2. ฟังก์ชันลบ (ตัวใหม่ที่เพิ่มเข้าไป)
+        async function deleteContact() {
+            let nameToDelete = document.getElementById('deleteInput').value;
+
+            if(!nameToDelete) { alert("กรุณาใส่ชื่อที่จะลบ!"); return; }
+
+            // ส่งชื่อไปที่ API ลบ (อย่าลืมเช็คว่าใน app.py มี Route นี้แล้วนะ)
+            let response = await fetch('/api/delete_contact/' + nameToDelete, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                alert("✅ ลบข้อมูลคุณ " + nameToDelete + " เรียบร้อยแล้ว!");
+            } else {
+                alert("❌ หาไม่เจอ หรือเกิดข้อผิดพลาด");
+            }
+        }
+    </script>
 </body>
 </html>
