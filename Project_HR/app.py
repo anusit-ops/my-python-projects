@@ -37,7 +37,7 @@ def add_employees():
         data = request.json
         full_name = data.get("fullname")
         position = data.get("position")
-        phone = data.get("phonenumber")
+        phone = data.get("phone")
 
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -74,11 +74,12 @@ def update_employee(emp_id):
         data = request.json
         new_name = data.get("fullname")
         new_position = data.get("position")
+        new_phone = data.get("phone")
 
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('UPDATE employees SET fullname = ?, position = ? WHERE id = ?', 
-                       (new_name, new_position, emp_id))
+        cursor.execute('UPDATE employees SET fullname = ?, position = ?, phone = ? WHERE id = ?', 
+                       (new_name, new_position, new_phone, emp_id))
 
         if cursor.rowcount == 0:
             conn.close()

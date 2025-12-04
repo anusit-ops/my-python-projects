@@ -62,7 +62,7 @@
                     <td>${emp.position}</td>
                     <td>${emp.phone || "-"}</td>
                     <td>
-                        <button class="btn-edit" onclick="editEmployee(${emp.id}, '${emp.fullname}', '${emp.position}')">✏️ แก้ไข</button>
+                        <button class="btn-edit" onclick="editEmployee(${emp.id}, '${emp.fullname}', '${emp.position}','${emp.phone}')">✏️ แก้ไข</button>
                         <button class="btn-delete" onclick="deleteEmployee(${emp.id})">🗑️ ลบ</button>
                     </td>
                 </tr>`;
@@ -81,7 +81,7 @@
             await fetch('/api/add_employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullname: name, position: pos, phonenumber:phone}) // ส่งตัวแปรให้ตรงกับ Python
+                body: JSON.stringify({ fullname: name, position: pos, phone:phone}) // ส่งตัวแปรให้ตรงกับ Python
             });
 
             document.getElementById('nameInput').value = '';
@@ -98,15 +98,17 @@
         }
 
         // 4. แก้ไขพนักงาน (PUT)
-        async function editEmployee(id, oldName, oldPos) {
+        async function editEmployee(id, oldName, oldPos, oldPhone) {
             let newName = prompt("แก้ไขชื่อ:", oldName);
             let newPos = prompt("แก้ไขตำแหน่ง:", oldPos);
+            let newPhone = prompt("แก้ไขเบอร์โทร:", oldPhone);
 
-            if (newName && newPos) {
+
+            if (newName && newPos && newPhone) {
                 await fetch('/api/update_employee/' + id, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ fullname: newName, position: newPos })
+                    body: JSON.stringify({ fullname: newName, position: newPos,phone: newPhone })
                 });
                 loadEmployees(); // โหลดตารางใหม่ทันที
             }
