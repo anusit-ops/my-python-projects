@@ -9,7 +9,8 @@ sql_command = """
 CREATE TABLE IF NOT EXISTS employees (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     fullname TEXT NOT NULL,
-    position TEXT NOT NULL
+    position TEXT NOT NULL,
+    phone TEXT NOT NULL
     )
 """
 cursor.execute(sql_command)

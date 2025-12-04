@@ -27,6 +27,7 @@
     <div class="form-group">
         <input type="text" id="nameInput" placeholder="ชื่อ-นามสกุล">
         <input type="text" id="posInput" placeholder="ตำแหน่ง">
+        <input type="text" id="phoneInput" placeholder="เบอร์โทรศัพท์">
         <button class="btn-add" onclick="addEmployee()">+ เพิ่มพนักงาน</button>
     </div>
 
@@ -36,6 +37,7 @@
                 <th>ID</th>
                 <th>ชื่อ-นามสกุล</th>
                 <th>ตำแหน่ง</th>
+                <th>เบอร์โทรศัพท์</th>
                 <th>จัดการ</th>
             </tr>
         </thead>
@@ -58,6 +60,7 @@
                     <td>${emp.id}</td>
                     <td>${emp.fullname}</td>
                     <td>${emp.position}</td>
+                    <td>${emp.phone || "-"}</td>
                     <td>
                         <button class="btn-edit" onclick="editEmployee(${emp.id}, '${emp.fullname}', '${emp.position}')">✏️ แก้ไข</button>
                         <button class="btn-delete" onclick="deleteEmployee(${emp.id})">🗑️ ลบ</button>
@@ -71,13 +74,14 @@
         async function addEmployee() {
             let name = document.getElementById('nameInput').value;
             let pos = document.getElementById('posInput').value;
+            let phone = document.getElementById('phoneInput').value;
 
             if(!name || !pos) { alert("กรอกข้อมูลให้ครบ!"); return; }
 
             await fetch('/api/add_employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullname: name, position: pos }) // ส่งตัวแปรให้ตรงกับ Python
+                body: JSON.stringify({ fullname: name, position: pos, phonenumber:phone}) // ส่งตัวแปรให้ตรงกับ Python
             });
 
             document.getElementById('nameInput').value = '';

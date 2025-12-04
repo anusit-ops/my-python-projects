@@ -37,11 +37,12 @@ def add_employees():
         data = request.json
         full_name = data.get("fullname")
         position = data.get("position")
+        phone = data.get("phonenumber")
 
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO employees (fullname, position) VALUES (?, ?)', 
-                       (full_name, position))
+        cursor.execute('INSERT INTO employees (fullname, position, phone) VALUES (?, ?, ?)', 
+                       (full_name, position,phone))
         conn.commit()
         conn.close()
         return jsonify({"message": "บันทึกสำเร็จ", "name": full_name})
